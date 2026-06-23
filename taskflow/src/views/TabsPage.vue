@@ -3,17 +3,17 @@
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button tab="tab1" href="/tabs/tab1">
+        <ion-tab-button tab="tasks" href="/tabs/tasks">
           <ion-icon aria-hidden="true" :icon="triangle" />
           <ion-label>Tasks</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button tab="tab2" href="/tabs/tab2">
+        <ion-tab-button tab="completed" href="/tabs/completed">
           <ion-icon aria-hidden="true" :icon="ellipse" />
           <ion-label>Completed</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button tab="tab3" href="/tabs/tab3">
+        <ion-tab-button tab="settings" href="/tabs/settings">
           <ion-icon aria-hidden="true" :icon="square" />
           <ion-label>Settings</ion-label>
         </ion-tab-button>

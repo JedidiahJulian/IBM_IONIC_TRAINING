@@ -5,8 +5,9 @@
 =============================================================
 -->
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonFab, IonFabButton, IonIcon, IonCheckbox, IonLabel } from '@ionic/vue'
 import { add } from 'ionicons/icons'
 
@@ -26,13 +27,21 @@ const { tasks, doneCount, pendingCount, totalCount } = storeToRefs(taskStore)
 // const { addTask, toggleTask, removeTask } = taskStore
 const { addTask, toggleTask, removeTask } = taskStore
 
+const router = useRouter()
+
 // This local ref is fine — it's UI state, not task state
 const newTaskName = ref('')
+
+const pendingTasks = computed(() => tasks.value.filter(t => t.done === false))
 
 function handleAdd() {
   // TODO 5: Call addTask() from the store, then clear the input
   addTask(newTaskName.value)
   newTaskName.value = ''
+}
+
+function goToTaskDetail(taskId) {
+  router.push(`/tabs/tasks/${taskId}`)
 }
 </script>
 
@@ -62,14 +71,14 @@ function handleAdd() {
       </div>
 
       <!-- Task list -->
-      <div v-if="tasks.length == 0">
+      <div v-if="pendingTasks.length == 0">
         <p class="no-tasks">No tasks available</p>
       </div>
       <ion-list v-else>
-        <ion-item v-for="task in tasks" :key="task.id">
-          <ion-checkbox slot="start" v-model="task.done" @ionChange="toggleTask(task.id)"></ion-checkbox>
+        <ion-item v-for="task in pendingTasks" :key="task.id" @click="goToTaskDetail(task.id)" button>
+          <ion-checkbox slot="start" :checked="task.done" @ionChange="toggleTask(task.id)"></ion-checkbox>
           <ion-label :class="{ done: task.done }">{{ task.name }}</ion-label>
-          <ion-button slot="end" fill="clear" color="danger" @click="removeTask(task.id)">Remove</ion-button>
+          <ion-button slot="end" fill="clear" color="danger" @click.stop="removeTask(task.id)">Remove</ion-button>
         </ion-item>
       </ion-list>
 
