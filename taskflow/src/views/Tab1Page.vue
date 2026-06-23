@@ -7,6 +7,8 @@
 <script setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonFab, IonFabButton, IonIcon, IonCheckbox, IonLabel } from '@ionic/vue'
+import { add } from 'ionicons/icons'
 
 // TODO 1: Import your store
 // import { useTaskStore } from '@/stores/taskStore'
@@ -35,53 +37,56 @@ function handleAdd() {
 </script>
 
 <template>
-  <div class="task-view">
-    <nav class="page-nav">
-      <RouterLink to="/home">← Home</RouterLink>
-    </nav>
-    <h1>📝 Tasks</h1>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Tasks</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense">
+        <ion-toolbar>
+          <ion-title size="large">Tasks</ion-title>
+        </ion-toolbar>
+      </ion-header>
 
-    <!-- TODO 6: Display totalCount, doneCount, pendingCount from the store -->
-    <div class="stats">
-      <!-- Total: {{ ??? }} | Done: {{ ??? }} | Pending: {{ ??? }} -->
-      Total: {{ totalCount }} | Done: {{ doneCount }} | Pending: {{ pendingCount }}
-    </div>
-
-    <div class="input-row">
-      <input v-model="newTaskName" placeholder="New task..." @keyup.enter="handleAdd" />
-      <button @click="handleAdd">Add</button>
-    </div>
-    <!-- TODO 7: Render the task list using tasks from the store -->
-    <ul class="task-list">
-      <!-- v-for task in tasks -->
-      <!--   checkbox v-model="task.done" @change="toggleTask(task.id)" -->
-      <!--   span :class done -->
-      <!--   remove button @click="removeTask(task.id)" -->
-
-      <div v-if="tasks.length == 0">
-        <p> No tasks available</p>
+      <!-- Stats section -->
+      <div class="stats">
+        Total: {{ totalCount }} | Done: {{ doneCount }} | Pending: {{ pendingCount }}
       </div>
-      <li v-else v-for="task in tasks" :key="task.id">
-        <input type="checkbox" v-model="task.done" />
-        <span :class="{ done: task.done }">{{ task.name }}</span>
-        <button class="remove" @click="removeTask(task.id)">Remove</button>
-      </li>
-    </ul>
-  </div>
+
+      <!-- Input section -->
+      <div class="input-section">
+        <input v-model="newTaskName" placeholder="New task..." @keyup.enter="handleAdd" class="task-input" />
+        <ion-button @click="handleAdd" expand="block">Add Task</ion-button>
+      </div>
+
+      <!-- Task list -->
+      <div v-if="tasks.length == 0">
+        <p class="no-tasks">No tasks available</p>
+      </div>
+      <ion-list v-else>
+        <ion-item v-for="task in tasks" :key="task.id">
+          <ion-checkbox slot="start" v-model="task.done" @ionChange="toggleTask(task.id)"></ion-checkbox>
+          <ion-label :class="{ done: task.done }">{{ task.name }}</ion-label>
+          <ion-button slot="end" fill="clear" color="danger" @click="removeTask(task.id)">Remove</ion-button>
+        </ion-item>
+      </ion-list>
+
+      <!-- FAB for adding new tasks -->
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+        <ion-fab-button @click="handleAdd">
+          <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-content>
+  </ion-page>
 </template>
 
 <style scoped>
-.task-view { max-width: 480px; margin: 40px auto; padding: 24px; font-family: Arial, sans-serif; }
-.page-nav { margin-bottom: 16px; }
-.page-nav a { color: #42B883; text-decoration: none; font-weight: 600; }
-h1 { color: #1B2A4A; }
-.stats { font-size: 13px; color: #555; padding: 8px 12px; background: #e9f7f0; border-radius: 6px; margin-bottom: 16px; }
-.input-row { display: flex; gap: 8px; margin-bottom: 16px; }
-.input-row input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-.input-row button { padding: 8px 16px; background: #42B883; color: white; border: none; border-radius: 6px; cursor: pointer; }
-.task-list { list-style: none; padding: 0; margin: 0; }
-.task-list li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid #eee; }
-.task-list li span { flex: 1; font-size: 14px; }
+.stats { font-size: 13px; color: #555; padding: 12px 16px; background: #e9f7f0; margin: 16px 0; border-radius: 6px; }
+.input-section { padding: 16px; }
+.task-input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 8px; }
+.no-tasks { text-align: center; padding: 24px; color: #999; }
 .done { text-decoration: line-through; color: #9ca3af; }
-.task-list li .remove { padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
 </style>
