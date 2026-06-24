@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonIcon, IonCheckbox, IonLabel } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonIcon, IonCheckbox, IonLabel, IonThumbnail, IonImg } from '@ionic/vue'
 import { trash } from 'ionicons/icons'
 import { useTaskStore } from '@/stores/taskStore_2.js'
 
@@ -31,6 +31,9 @@ const completedTasks = computed(() => tasks.value.filter(t => t.done === true))
       </div>
       <ion-list v-else>
         <ion-item v-for="task in completedTasks" :key="task.id">
+          <ion-thumbnail slot="start" v-if="task.photo">
+            <ion-img :src="task.photo"></ion-img>
+          </ion-thumbnail>
           <ion-checkbox slot="start" :checked="task.done" @ionChange="toggleTask(task.id)"></ion-checkbox>
           <ion-label :class="{ done: task.done }">{{ task.name }}</ion-label>
           <ion-button slot="end" fill="clear" color="danger" @click="removeTask(task.id)">

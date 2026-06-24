@@ -70,6 +70,14 @@ export const useTaskStore = defineStore('tasks2', () => {
   const tasks  = ref([])
   const nextId = ref(1)
 
+  // Ensure all tasks have photo field initialized
+  function initializeTaskPhotos() {
+    tasks.value = tasks.value.map(t => ({
+      ...t,
+      photo: t.photo || null
+    }))
+  }
+
   // TODO 3: Define getters using computed()
   // const totalCount   = computed(() => ???)
   // const doneCount    = computed(() => ???)
@@ -80,10 +88,10 @@ export const useTaskStore = defineStore('tasks2', () => {
 
   // TODO 4: Define addTask(name) action
   // - Guard against empty names
-  // - Push a new task: { id: nextId.value++, name, done: false }
+  // - Push a new task: { id: nextId.value++, name, done: false, photo: null }
   function addTask(name) {
     if (!name.trim()) return
-    tasks.value.push({ id: nextId.value++, name: name.trim(), done: false })
+    tasks.value.push({ id: nextId.value++, name: name.trim(), done: false, photo: null })
   }
 
   // TODO 5: Define toggleTask(id) action
@@ -97,7 +105,18 @@ export const useTaskStore = defineStore('tasks2', () => {
     tasks.value = tasks.value.filter(t => t.id !== id)
   }
 
+  // TODO 8: Define addPhotoToTask(id, photoPath) action
+  function addPhotoToTask(id, photoPath) {
+    console.log('Store: addPhotoToTask called with id:', id, 'photoPath length:', photoPath.length)
+    const task = tasks.value.find(t => t.id === id)
+    console.log('Store: Found task:', task?.name)
+    if (task) {
+      task.photo = photoPath
+      console.log('Store: Photo assigned, task.photo is now:', task.photo.substring(0, 50) + '...')
+    }
+  }
+
   // TODO 7: Return everything the component needs to access
-  // return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask }
-  return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask }
+  // return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask, addPhotoToTask }
+  return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask, addPhotoToTask }
 })

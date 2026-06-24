@@ -8,7 +8,7 @@
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonFab, IonFabButton, IonIcon, IonCheckbox, IonLabel } from '@ionic/vue'
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonButton, IonFab, IonFabButton, IonIcon, IonCheckbox, IonLabel, IonThumbnail, IonImg } from '@ionic/vue'
 import { add } from 'ionicons/icons'
 
 // TODO 1: Import your store
@@ -76,6 +76,9 @@ function goToTaskDetail(taskId) {
       </div>
       <ion-list v-else>
         <ion-item v-for="task in pendingTasks" :key="task.id" @click="goToTaskDetail(task.id)" button>
+          <ion-thumbnail slot="start" v-if="task.photo">
+            <ion-img :src="task.photo"></ion-img>
+          </ion-thumbnail>
           <ion-checkbox slot="start" :checked="task.done" @ionChange="toggleTask(task.id)"></ion-checkbox>
           <ion-label :class="{ done: task.done }">{{ task.name }}</ion-label>
           <ion-button slot="end" fill="clear" color="danger" @click.stop="removeTask(task.id)">Remove</ion-button>
