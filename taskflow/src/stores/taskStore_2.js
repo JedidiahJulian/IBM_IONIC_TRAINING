@@ -60,6 +60,8 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
+const STORAGE_KEY = 'taskflow-tasks'
+
 // TODO 1: Export a useTaskStore function using defineStore
 // The store ID is 'tasks' — this appears in Vue DevTools
 export const useTaskStore = defineStore('tasks2', () => {
@@ -92,17 +94,20 @@ export const useTaskStore = defineStore('tasks2', () => {
   function addTask(name) {
     if (!name.trim()) return
     tasks.value.push({ id: nextId.value++, name: name.trim(), done: false, photo: null })
+    saveTasks()
   }
 
   // TODO 5: Define toggleTask(id) action
   function toggleTask(id) {
     const task = tasks.value.find(t => t.id === id)
     if (task) task.done = !task.done
+    saveTasks()
   }
 
   // TODO 6: Define removeTask(id) action
   function removeTask(id) {
     tasks.value = tasks.value.filter(t => t.id !== id)
+    saveTasks()
   }
 
   // TODO 8: Define addPhotoToTask(id, photoPath) action
@@ -113,10 +118,42 @@ export const useTaskStore = defineStore('tasks2', () => {
     if (task) {
       task.photo = photoPath
       console.log('Store: Photo assigned, task.photo is now:', task.photo.substring(0, 50) + '...')
+      saveTasks()
+    }
+  }
+
+  // Persistent storage actions
+  function saveTasks() {
+    try {
+      const serialized = JSON.stringify(tasks.value)
+      localStorage.setItem(STORAGE_KEY, serialized)
+    } catch (error) {
+      console.error('Failed to save tasks to localStorage:', error)
+    }
+  }
+
+  function loadTasks() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) {
+          tasks.value = parsed
+          const maxId = parsed.reduce((max, t) => Math.max(max, t.id || 0), 0)
+          nextId.value = maxId + 1
+        } else {
+          tasks.value = []
+        }
+      } else {
+        tasks.value = []
+      }
+    } catch (error) {
+      console.error('Failed to load tasks from localStorage:', error)
+      tasks.value = []
     }
   }
 
   // TODO 7: Return everything the component needs to access
   // return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask, addPhotoToTask }
-  return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask, addPhotoToTask }
+  return { tasks, totalCount, doneCount, pendingCount, addTask, toggleTask, removeTask, addPhotoToTask, saveTasks, loadTasks }
 })
